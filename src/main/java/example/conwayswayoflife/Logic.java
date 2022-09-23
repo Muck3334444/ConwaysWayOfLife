@@ -59,12 +59,13 @@ public class Logic {
         for (int i = 0; i < possibleFields.size(); i++) {
             for (int j = -1; j < 2; j++) {
                 for (int k = -1; k < 2; k++) {
-                    if (i != 0 && j != 0 && setLocations.contains(possibleFields.get(i).addPointToLocation(j,k))){
+                    if (j != 0 && k != 0 && setLocations.contains(possibleFields.get(i).addPointToLocation(j,k))){
                         counter++;
                     }
                 }
             }
             possibleFields.get(i).setCountSurroundingSetFields(counter);
+            counter = 0;
         }
     }
 
@@ -85,10 +86,11 @@ public class Logic {
         }
         findAllPointsToCheck();
         countSurroundingFields();
-        setLocations = createNextGeneration();
+        setLocations = createNextGeneration(); // TODO Fehler finden
         for (int i = 0; i < setLocations.size(); i++) {
             rectangles[(int)setLocations.get(i).getX()][(int)setLocations.get(i).getY()].setFill(Color.BLACK);
         }
+
     }
 
     public Rectangle getRectangle(int row, int column){return rectangles[row][column];}
