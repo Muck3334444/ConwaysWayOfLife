@@ -60,7 +60,7 @@ public class Logic {
         for (int i = 0; i < setLocations.size(); i++) {
             for (int j = -1; j < 2; j++) {
                 for (int k = -1; k < 2; k++) {
-                    Point2D point2D = new Point2D(setLocations.get(i).getX() + j,setLocations.get(i).getY() + k);
+                    Point2D point2D = checkOutOfBounds(new Point2D(setLocations.get(i).getX() + j,setLocations.get(i).getY() + k));
                     if (checkIfPointInPossibleFields(point2D)){
                         boolean alreadySet = false;
                         if (j == 0 && k == 0){
@@ -71,6 +71,23 @@ public class Logic {
                 }
             }
         }
+    }
+
+    private Point2D checkOutOfBounds(Point2D point2D){
+        Point2D pointReturn = point2D;
+        if (point2D.getX() < 0){
+            pointReturn = new Point2D(fieldSize - 1, pointReturn.getY());
+        }
+        else if (point2D.getX() >= fieldSize){
+            pointReturn = new Point2D(0, pointReturn.getY());
+        }
+        if (point2D.getY() < 0){
+            pointReturn = new Point2D(pointReturn.getX(), fieldSize - 1);
+        }
+        else if (point2D.getY() >= fieldSize){
+            pointReturn = new Point2D(pointReturn.getX(), 0);
+        }
+        return pointReturn;
     }
 
     /*
@@ -90,9 +107,9 @@ public class Logic {
         for (int i = 0; i < possibleFields.size(); i++) {
             for (int j = -1; j < 2; j++) {
                 for (int k = -1; k < 2; k++) {
-                    if ((j != 0 || k != 0) && setLocations.contains(possibleFields.get(i).addPointToLocation(j,k))){
-                        counter++;
-                    }
+                        if ((j != 0 || k != 0) && setLocations.contains(checkOutOfBounds(possibleFields.get(i).addPointToLocation(j,k)))){
+                            counter++;
+                        }
                 }
             }
             possibleFields.get(i).setCountSurroundingSetFields(counter);

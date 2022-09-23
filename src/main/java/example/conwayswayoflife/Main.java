@@ -48,10 +48,7 @@ public class Main extends Application {
 
     private static List<Point2D> setInitialFields(){
         List<Point2D> initialPositions = new ArrayList<>();
-        initialPositions.add(new Point2D(15,20));
-        initialPositions.add(new Point2D(15,21));
-        initialPositions.add(new Point2D(15,22));
-        return  initialPositions;
+        return initialPositions;
     }
 
     private static void setUpField(Rectangle[][] rectangle){
