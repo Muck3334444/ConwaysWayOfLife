@@ -6,6 +6,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
@@ -38,6 +39,7 @@ public class Main extends Application {
         primaryStage.show();
         primaryStage.setTitle("Conways way of life");
         primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, (event) -> primaryStageKeyPressed(event.getCode()));
+        primaryStage.addEventHandler(MouseEvent.MOUSE_CLICKED, (event -> primaryStageMouseClicked(event)));
         scene.setRoot(root);
         primaryStage.setWidth(1500);
         primaryStage.setHeight(1000);
@@ -63,5 +65,9 @@ public class Main extends Application {
         if (keyCode == KeyCode.ENTER){
             logic.turnControl();
         }
+    }
+
+    public static void primaryStageMouseClicked(MouseEvent event){
+        logic.fieldClicked(new Point2D(event.getX(),event.getY()));
     }
 }

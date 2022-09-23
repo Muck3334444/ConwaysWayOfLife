@@ -11,16 +11,36 @@ public class Logic {
     private int fieldSize, windowWidth, windowHeight;
     private List<Point2D> setLocations;
     private List<PossibleField> possibleFields;
-
     Rectangle[][] rectangles;
     public Logic(int fieldSize, int windowWidth, int windowHeight, List<Point2D> initialPositions) {
         this.fieldSize = fieldSize;
         this.windowWidth = windowWidth;
         this.windowHeight = windowHeight;
         setUpRectangles();
+        possibleFields = new ArrayList<>();
         setLocations = initialPositions;
         for (int i = 0; i < setLocations.size(); i++) {
             rectangles[(int)setLocations.get(i).getX()][(int)setLocations.get(i).getY()].setFill(Color.BLACK);
+        }
+    }
+
+    public Rectangle getRectangle(int row, int column){return rectangles[row][column];}
+    public Rectangle[][] getRectangles(){return rectangles;}
+
+    public void fieldClicked(Point2D point2D){
+        for (int i = 0; i < rectangles.length; i++) {
+            for (int j = 0; j < rectangles[0].length; j++) {
+                if (rectangles[i][j].contains(point2D)) {
+                    if (setLocations.contains(new Point2D(i,j))){
+                        setLocations.remove(new Point2D(i,j));
+                        rectangles[i][j].setFill(Color.WHITE);
+                    }
+                    else {
+                        setLocations.add(new Point2D(i,j));
+                        rectangles[i][j].setFill(Color.BLACK);
+                    }
+                }
+            }
         }
     }
 
@@ -37,14 +57,13 @@ public class Logic {
     }
 
     private void findAllPointsToCheck(){
-        possibleFields = new ArrayList<>();
         for (int i = 0; i < setLocations.size(); i++) {
             for (int j = -1; j < 2; j++) {
                 for (int k = -1; k < 2; k++) {
-                    Point2D point2D = new Point2D(setLocations.get(i).getX() + j,setLocations.get(i).getX() + k);
-                    if (!possibleFields.contains(point2D)){
+                    Point2D point2D = new Point2D(setLocations.get(i).getX() + j,setLocations.get(i).getY() + k);
+                    if (checkIfPointInPossibleFields(point2D)){
                         boolean alreadySet = false;
-                        if (j+k == 0){
+                        if (j == 0 && k == 0){
                             alreadySet = true;
                         }
                         possibleFields.add(new PossibleField(point2D,alreadySet));
@@ -54,12 +73,24 @@ public class Logic {
         }
     }
 
+    /*
+    Return: True if the point is not found in the possible fields
+     */
+    private boolean checkIfPointInPossibleFields(Point2D point2D){
+        for (PossibleField possibleField:possibleFields) {
+            if (possibleField.getLocation().equals(point2D)){
+                return false;
+            }
+        }
+        return true;
+    }
+
     private void countSurroundingFields(){
         int counter = 0;
         for (int i = 0; i < possibleFields.size(); i++) {
             for (int j = -1; j < 2; j++) {
                 for (int k = -1; k < 2; k++) {
-                    if (j != 0 && k != 0 && setLocations.contains(possibleFields.get(i).addPointToLocation(j,k))){
+                    if ((j != 0 || k != 0) && setLocations.contains(possibleFields.get(i).addPointToLocation(j,k))){
                         counter++;
                     }
                 }
@@ -73,9 +104,13 @@ public class Logic {
         List<Point2D> setLocationsNextGen = new ArrayList<>();
         for (PossibleField posF:possibleFields) {
             int amount = posF.getCountSurroundingSetFields();
-            if (amount == 2 || amount == 3){
+            if (amount == 2 && setLocations.contains(posF.getLocation())){ // Keeping alive
                 setLocationsNextGen.add(posF.getLocation());
-            } // All other cases end in the death of the field
+            }
+            else if (amount == 3) { // Spawning / Keeping alive
+                setLocationsNextGen.add(posF.getLocation());
+            }
+            // All other cases end in the death of the field
         }
         return setLocationsNextGen;
     }
@@ -86,13 +121,10 @@ public class Logic {
         }
         findAllPointsToCheck();
         countSurroundingFields();
-        setLocations = createNextGeneration(); // TODO Fehler finden
+        setLocations = createNextGeneration();
+        possibleFields.clear();
         for (int i = 0; i < setLocations.size(); i++) {
             rectangles[(int)setLocations.get(i).getX()][(int)setLocations.get(i).getY()].setFill(Color.BLACK);
         }
-
     }
-
-    public Rectangle getRectangle(int row, int column){return rectangles[row][column];}
-    public Rectangle[][] getRectangles(){return rectangles;}
 }
